@@ -2,12 +2,7 @@ require 'spec_helper'
 
 
 RSpec.describe Bridge::Bid do
-  subject(:bid) { described_class.all.sample }
-  describe ".all" do
-    it "returns 35 possible bids" do
-      expect(described_class.all.length).to eq(35)
-    end
-  end
+  subject(:bid) { described_class.new(rand(1..7), Bridge::Strain.all.sample) }
 
   describe "<=>" do
     it "is zero for identical bids" do
