@@ -57,5 +57,12 @@ module Bridge
         end
       end
     end
+
+    def strong? suit
+      honors = Array(cards_by_suit[suit]).map(&:rank) & Bridge::Rank.honors
+
+      (honors & [Bridge::Rank::Ace, Bridge::Rank::King, Bridge::Rank::Queen]).length >= 2 ||
+        (honors.length >= 3 && (honors & [Bridge::Rank::Ace, Bridge::Rank::King]).length >= 1)
+    end
   end
 end
