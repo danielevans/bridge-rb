@@ -31,6 +31,18 @@ RSpec.describe Bridge::Strain do
     end
   end
 
+  describe ".majors" do
+    it "returns hearts and spades" do
+      expect(described_class.majors).to match_array [Bridge::Strain::Heart, Bridge::Strain::Spade]
+    end
+  end
+
+  describe ".minors" do
+    it "returns clubs and diamonds" do
+      expect(described_class.minors).to match_array [Bridge::Strain::Club, Bridge::Strain::Diamond]
+    end
+  end
+
   describe "#>" do
     described_class.all.each do |strain|
       context "with #{strain} as the receiver" do

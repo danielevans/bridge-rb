@@ -7,5 +7,9 @@ module Bridge
       return r unless r == 0
       return level <=> other.level
     end
+
+    def pass?
+      !level && !strain
+    end
   end
 end
