@@ -14,7 +14,7 @@ def setup_specific_hand(pbnHandNotation)
       suit = Bridge::Strain.suits[-memo.length-1]
 
       memo << hand.split(//).reduce([]) do |innermemo, rankOfSuit|
-        innermemo << Bridge::Card.for(ranks: [Bridge::Rank.forLetter(rankOfSuit)], suits: [suit])
+        innermemo << Bridge::Card.for(ranks: [Bridge::Rank[rankOfSuit]], suits: [suit])
       end
     end.flatten
   end
