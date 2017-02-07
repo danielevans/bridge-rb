@@ -39,6 +39,14 @@ module Bridge
       @all
     end
 
+    def self.honors
+      [Ace, King, Queen, Jack, Ten]
+    end
+
+    def self.spot
+      all - honors
+    end
+
     #intent: match PBN import format. Pro: convenience Con: import format strewn
     #todo: Move this method into composed Rank field? Inject that singleton object (class?) into all domain classes
     #requiring PBN import?

@@ -4,9 +4,10 @@ module Bridge
   class Hand
     attr_reader :cards
     attr_reader :played
+    attr_reader :vulnerable
 
     def initialize cards
-      raise ArgumentError unless cards && cards.length == 13
+      fail ArgumentError, "expected 13 cards, got #{cards.length}" unless cards && cards.length == 13
       @cards = cards.freeze
     end
 
@@ -33,23 +34,35 @@ module Bridge
 
     def length_points
       @length_points ||= begin
-                         by_suit = cards.group_by(&:suit)
-                         by_suit.values.reduce(0) do |memo,suit|
+                           cards_by_suit.values.reduce(0) do |memo,suit|
                            memo + [suit.length - 4, 0].max
                          end
                        end
     end
 
-    def shortness_points trump=nil
-      by_suit = cards.group_by(&:suit)
+    def length strain
+      Array(cards_by_suit[strain]).length
+    end
 
+    def cards_by_suit
+      @by_suit ||= cards.group_by(&:suit)
+    end
+
+    def shortness_points trump=nil
       Strain.suits.reduce(0) do |memo, suit|
         if suit == trump # don't count short in trump
           memo
         else
-          memo + Hash.new(0).merge({ 0 => 5, 1 => 3, 2 => 1 })[Array(by_suit[suit]).length]
+          memo + Hash.new(0).merge({ 0 => 5, 1 => 3, 2 => 1 })[length(suit)]
         end
       end
+    end
+
+    def strong? suit
+      honors = Array(cards_by_suit[suit]).map(&:rank) & Bridge::Rank.honors
+
+      (honors & [Bridge::Rank::Ace, Bridge::Rank::King, Bridge::Rank::Queen]).length >= 2 ||
+        (honors.length >= 3 && (honors & [Bridge::Rank::Ace, Bridge::Rank::King]).length >= 1)
     end
   end
 end

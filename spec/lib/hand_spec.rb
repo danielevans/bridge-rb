@@ -194,4 +194,34 @@ RSpec.describe Bridge::Hand do
       expect(subject.remaining).to eq(cards - [aceOfSpades])
     end
   end
+
+  describe "#strong?" do
+    context "when there are no high cards in the suit" do
+      setup_specific_hand('2345.2345.234.23')
+      it "is not strong" do
+        expect(subject.strong?(Bridge::Strain::Spade)).to be false
+      end
+    end
+
+    context "when there is QJ10 in the suit" do
+      setup_specific_hand('QJT9.2345.234.23')
+      it "is not strong" do
+        expect(subject.strong?(Bridge::Strain::Spade)).to be false
+      end
+    end
+
+    context "when there is KJ10 in the suit" do
+      setup_specific_hand('KJT9.2345.234.23')
+      it "is strong" do
+        expect(subject.strong?(Bridge::Strain::Spade)).to be true
+      end
+    end
+
+    context "when there is AQ32.. in the suit" do
+      setup_specific_hand('AQ32.2345.234.23')
+      it "is strong" do
+        expect(subject.strong?(Bridge::Strain::Spade)).to be true
+      end
+    end
+  end
 end

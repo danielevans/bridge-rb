@@ -28,6 +28,14 @@ module Bridge
       @suits
     end
 
+    def self.majors
+      [Heart, Spade]
+    end
+
+    def self.minors
+      [Club, Diamond]
+    end
+
     def initialize(*args)
       raise NoMethodError, "Cannot initialize a new suit"
     end
