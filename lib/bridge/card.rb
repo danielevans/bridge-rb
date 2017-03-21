@@ -19,7 +19,7 @@ module Bridge
 
     def self.for suits: nil, ranks: nil
       @all.select do |card|
-        (suits.nil? || suits.include?(card.suit)) && (ranks.nil? || ranks.include?(card.rank))
+        (suits.nil? || Array(suits).include?(card.suit)) && (ranks.nil? || Array(ranks).include?(card.rank))
       end
     end
 

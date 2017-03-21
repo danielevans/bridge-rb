@@ -43,6 +43,38 @@ RSpec.describe Bridge::Strain do
     end
   end
 
+  describe ".for_symbol" do
+    %i(Club Clubs club clubs CLUB CLUBS C c).each do |symbol|
+      it "Returns Club for symbol #{symbol}" do
+        expect(described_class.for_symbol symbol).to be Bridge::Strain::Club
+      end
+    end
+
+    %i(Diamond Diamonds diamond diamonds DIAMOND DIAMONDS D d).each do |symbol|
+      it "Returns Diamond for symbol #{symbol}" do
+        expect(described_class.for_symbol symbol).to be Bridge::Strain::Diamond
+      end
+    end
+
+    %i(Heart Hearts heart hearts HEART HEARTS H h).each do |symbol|
+      it "Returns Heart for symbol #{symbol}" do
+        expect(described_class.for_symbol symbol).to be Bridge::Strain::Heart
+      end
+    end
+
+    %i(Spade Spades spade spades SPADE SPADES S s).each do |symbol|
+      it "Returns Spade for symbol #{symbol}" do
+        expect(described_class.for_symbol symbol).to be Bridge::Strain::Spade
+      end
+    end
+
+    %i(NoTrump NoTrumps notrump notrumps NOTRUMP NOTRUMPS Notrump Notrumps NT Nt nT nt).each do |symbol|
+      it "Returns NoTrump for symbol #{symbol}" do
+        expect(described_class.for_symbol symbol).to be Bridge::Strain::NoTrump
+      end
+    end
+  end
+
   describe "#>" do
     described_class.all.each do |strain|
       context "with #{strain} as the receiver" do

@@ -50,7 +50,7 @@ module Bridge
     #intent: match PBN import format. Pro: convenience Con: import format strewn
     #todo: Move this method into composed Rank field? Inject that singleton object (class?) into all domain classes
     #requiring PBN import?
-    def self.forLetter letter
+    def self.for_letter letter
       case letter
         when 'T'
           Bridge::Rank::Ten
@@ -65,6 +65,10 @@ module Bridge
         else
           const_get(NAME_MAP[letter.to_i].capitalize.to_sym)
       end
+    end
+
+    def self.[] letter
+      for_letter letter
     end
 
     def initialize(*args)
