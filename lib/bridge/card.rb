@@ -36,7 +36,7 @@ module Bridge
     end
 
     def self.deal
-      shuffled.each_slice(13)
+      Pavlicek.new.hands_for_bridge_deal_number(rand(Pavlicek::BRIDGE_DEAL_COUNT)).values
     end
 
     # Inspired by jvenezia http://stackoverflow.com/questions/1931604/whats-the-right-way-to-implement-equality-in-ruby
