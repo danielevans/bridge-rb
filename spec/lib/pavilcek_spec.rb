@@ -8,18 +8,27 @@ module Bridge
       let(:ace_of_hearts) { Card.specifically_for(suit: Strain::Heart, rank: Rank::Ace) }
       context "with them ordered downard in suit and just N and E hands" do
         let(:pavlicek) do
-          described_class.new({n: 1, e: 1},
+          described_class.new({e:1, n: 1},
                               [ace_of_spades, ace_of_hearts])
         end
         it "indicates the number of possible deals is 2" do
           expect(pavlicek.possible_deal_count).to eq 2
         end
-        context "for deal number 1" do
+        context "for deal number 0" do
           let(:deal) { pavlicek.hands_for_bridge_deal_number(0) }
           context "the hash it returns" do
-            it "matches cards in reverse order as the order in the hand lengths" do
-              expect(deal[:n][0]).to eq ace_of_hearts
+            it "matches cards in ascending alphabetic order of the direction symbols" do
               expect(deal[:e][0]).to eq ace_of_spades
+              expect(deal[:n][0]).to eq ace_of_hearts
+            end
+          end
+        end
+        context "for deal number 1" do
+          let(:deal) { pavlicek.hands_for_bridge_deal_number(1) }
+          context "the hash it returns" do
+            it "matches cards in descending alphabetic order of the direction symbols" do
+              expect(deal[:e][0]).to eq ace_of_hearts
+              expect(deal[:n][0]).to eq ace_of_spades
             end
           end
         end
