@@ -6,7 +6,7 @@ module Bridge
     # (52!/(13!)^4); important to / below giving non-rounded results
     BRIDGE_DEAL_COUNT = 53_644_737_765_488_792_839_237_440_000
 
-    def initialize(hand_lengths = { n: 13, e: 13, w: 13, s: 13 }, ordering = Card.all)
+    def initialize(hand_lengths = {n: 13, e: 13, w: 13, s: 13}, ordering = Card.all)
       # non-side-affected variables
       @hand_lengths = hand_lengths
       @ordering = ordering
@@ -15,7 +15,6 @@ module Bridge
     end
 
     def hands_for_bridge_deal_number(deal_number)
-      # side-affected variables
       initialize_scratch_variables deal_number
 
       enum = @ordering.each
@@ -27,20 +26,30 @@ module Bridge
       to_return
     end
 
-    def initialize_scratch_variables(deal_number)
-      @slots_left_per_hand = @hand_lengths.clone
-      @cards_left_to_deal = @total_cards # C
-      @deal_count_in_remaining_subdomain = @possible_deal_count # K
-      @deal_index_within_remaining_subdomain = deal_number # I
-      @deal_count_remaining_if_card_dealt = nil # X
+    def bridge_deal_number_for_hands(hands)
+      to_return = 0
+      initialize_scratch_variables to_return
+
+      @ordering.each do |card|
+        to_return += count_deals_in_subdomains_prior_to card, hands
+      end
+      to_return
     end
 
     private
 
+    def initialize_scratch_variables(deal_number)
+      @slots_left_per_hand = @hand_lengths.clone # N, S, E, W
+      @cards_left_to_deal = @total_cards # C
+      @deal_count_in_remaining_subdomain = @possible_deal_count # K = D
+      @deal_index_within_remaining_subdomain = deal_number # I
+      @deal_count_remaining_if_card_dealt = nil # X
+    end
+
     def hand_key_for_next_card
       @slots_left_per_hand.keys.sort.each do |direction|
         @deal_count_remaining_if_card_dealt = @deal_count_in_remaining_subdomain *
-                                              @slots_left_per_hand[direction] / @cards_left_to_deal # X = K * <dir> / C
+            @slots_left_per_hand[direction] / @cards_left_to_deal # X = K * <dir> / C
         if @deal_index_within_remaining_subdomain < @deal_count_remaining_if_card_dealt # if I < X
           @slots_left_per_hand[direction] -= 1 # <dir> = <dir> - 1
           @deal_count_in_remaining_subdomain = @deal_count_remaining_if_card_dealt # K = X
@@ -50,6 +59,23 @@ module Bridge
           @deal_index_within_remaining_subdomain -= @deal_count_remaining_if_card_dealt # I = I - X
         end
       end
+    end
+
+    def count_deals_in_subdomains_prior_to(card, hands)
+      deal_count = 0
+      hands.keys.sort.each do |direction|
+        @deal_count_remaining_if_card_dealt = @deal_count_in_remaining_subdomain *
+            @slots_left_per_hand[direction] / @cards_left_to_deal # X = K * <dir> / C
+        if hands[direction].include?(card)
+          @slots_left_per_hand[direction] -= 1
+          @deal_count_in_remaining_subdomain = @deal_count_remaining_if_card_dealt
+          @cards_left_to_deal -= 1
+          return deal_count
+        else
+          deal_count += @deal_count_remaining_if_card_dealt
+        end
+      end
+      deal_count
     end
 
     def calculate_deal_count
