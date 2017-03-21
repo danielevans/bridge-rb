@@ -3,8 +3,8 @@ module Bridge
     include Comparable
 
     def <=> other
-      # note this ordering is not consistent with equals: <=> may return 0 when eq returns false
-      rank <=> other.rank
+      return rank <=> other.rank unless rank == other.rank
+      suit <=> other.suit
     end
 
     @all = []
@@ -37,6 +37,15 @@ module Bridge
 
     def self.deal
       shuffled.each_slice(13)
+    end
+
+    # Inspired by jvenezia http://stackoverflow.com/questions/1931604/whats-the-right-way-to-implement-equality-in-ruby
+    def ==(other)
+      other.class == self.class && other.state == self.state
+    end
+
+    def state
+      self.members.map { |member| self.send(member) }
     end
   end
 end
