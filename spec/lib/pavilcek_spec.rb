@@ -152,7 +152,6 @@ module Bridge
         let(:random_deal_index) { Random.rand(Pavlicek::BRIDGE_DEAL_COUNT) }
         let(:deal) { pavlicek.hands_for_bridge_deal_number(random_deal_index) }
         it "should get the same number back again" do
-          puts random_deal_index, "=>", deal
           expect(pavlicek.bridge_deal_number_for_hands(deal)).to eq(random_deal_index)
         end
       end
