@@ -3,6 +3,7 @@ module Bridge
     include Comparable
 
     def <=> other
+      # note this ordering is not consistent with equals: <=> may return 0 when eq returns false
       rank <=> other.rank
     end
 
@@ -20,6 +21,10 @@ module Bridge
       @all.select do |card|
         (suits.nil? || suits.include?(card.suit)) && (ranks.nil? || ranks.include?(card.rank))
       end
+    end
+
+    def self.specifically_for suit:, rank:
+      self.for(suits: [suit], ranks: [rank])[0]
     end
 
     def self.all
