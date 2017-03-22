@@ -15,6 +15,7 @@ module Bridge
     end
 
     def hands_for_bridge_deal_number(deal_number)
+      validate_deal_number deal_number
       initialize_scratch_variables deal_number
 
       enum = @ordering.each
@@ -27,6 +28,7 @@ module Bridge
     end
 
     def bridge_deal_number_for_hands(hands)
+      validate_hands hands
       to_return = 0
       initialize_scratch_variables to_return
 
@@ -37,6 +39,16 @@ module Bridge
     end
 
     private
+    def validate_deal_number deal_number
+      throw ArgumentError("deal_number > possible_deal_count: #{possible_deal_count}") unless
+          deal_number < possible_deal_count
+    end
+
+    def validate_hands hands
+      @hand_lengths.each_pair do |direction, hand_length|
+        throw ArgumentError("wrong suit lengths in hands") unless hands[direction].length == hand_length
+      end
+    end
 
     def initialize_scratch_variables(deal_number)
       @slots_left_per_hand = @hand_lengths.clone # N, S, E, W
@@ -47,7 +59,10 @@ module Bridge
     end
 
     def hand_key_for_next_card
-      @slots_left_per_hand.keys.sort.each do |direction|
+      @slots_left_per_hand.keys.sort do |x, y|
+        return x <=> y unless (special_sort_keys.include?(x) && special_sort_keys.include?(y))
+        sort_index_of(x) <=> sort_index_of(y)
+      end.each do |direction|
         @deal_count_remaining_if_card_dealt = @deal_count_in_remaining_subdomain *
             @slots_left_per_hand[direction] / @cards_left_to_deal # X = K * <dir> / C
         if @deal_index_within_remaining_subdomain < @deal_count_remaining_if_card_dealt # if I < X
@@ -63,7 +78,10 @@ module Bridge
 
     def count_deals_in_subdomains_prior_to(card, hands)
       deal_count = 0
-      hands.keys.sort.each do |direction|
+      hands.keys.sort do |x, y|
+        return x <=> y unless (special_sort_keys.include?(x) && special_sort_keys.include?(y))
+        sort_index_of(x) <=> sort_index_of(y)
+      end.each do |direction|
         @deal_count_remaining_if_card_dealt = @deal_count_in_remaining_subdomain *
             @slots_left_per_hand[direction] / @cards_left_to_deal # X = K * <dir> / C
         if hands[direction].include?(card)
@@ -89,5 +107,14 @@ module Bridge
       n.times { |i| product *= (i + 1) }
       product
     end
+
+    def sort_index_of(special_sort_key)
+      special_sort_keys.index special_sort_key
+    end
+
+    def special_sort_keys
+      [:n, :e, :s, :w]
+    end
+
   end
 end
